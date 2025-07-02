@@ -1,0 +1,27 @@
+Resources:
+  MyVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags: 
+        - Key: Name
+          Value: macauley-VPC
+        - Key: Project-Name
+          Value: Testproject-VPC
+  MyIGW: 
+    Type: AWS::EC2::TransitGateway
+    Properties:
+      Tags: 
+        - Key: Name
+          Value: macauley-igw
+        -  Key: Project-Name
+           Value: Testproject-igw
+  MyIGWattachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref MyIGW
+      VpcId: !Ref MyVpc
+ 
+
+
+

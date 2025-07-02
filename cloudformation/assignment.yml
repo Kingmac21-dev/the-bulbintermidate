@@ -1,0 +1,74 @@
+Resources:
+  AssignmentVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags: 
+         - Key: Name
+           Value: macauley-VPC
+         - Key: assignment-Name
+           Value: AssignmentVpc-VPC      
+  MyIGW: 
+    Type: AWS::EC2::TransitGateway
+    Properties:
+      Tags: 
+        - Key: Name
+          Value: macauley-igw
+        -  Key: assignment-Name
+           Value: assignmentproject-igw
+  MyIGWattachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref MyIGW
+      VpcId: !Ref AssignmentVpc
+  Assignmentoublicsubnet:
+       Type: AWS::EC2::Subnet
+       Properties:
+        CidrBlock: 10.0.0.0/24
+        Tags: 
+          - key: Name
+            Value: assignment-PublicSubnet
+        VpcId: !Ref AssignmentVpc
+  Assignmentroutetable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags: 
+        - key: Name
+        - Value: Assignmentroutetable
+      VpcId: ! Ref AssignmentVpc
+  Assignmentroutetableassociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref Assignmentroutetable
+      SubnetId: !Ref Assignmentoublicsubnet
+  Assignmentpublicinstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-006b4a3ad5f56fbd6
+      InstanceType: t3.micro
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: true
+      SubnetId: !Ref Assignmentoublicsubnet
+      Tags: 
+        - Key: Name
+          Value: PublicInstance
+      VpcId: !Ref AssignmentVpc
+  Assignmentprivatesubnet:
+       Type: AWS::EC2::Subnet
+       Properties:
+        CidrBlock: 10.0.0.0/22
+        Tags:  
+          - key: Name
+            Value: assignment-PrivateSubnet
+        VpcId: !Ref AssignmentVpc
+  Assignmentprivateinstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-006b4a3ad5f56fbd6
+      InstanceType: t3.micro
+      SubnetId: !Ref Assignmentprivatesubnet
+      Tags: 
+        - Key: Name
+          Value: PrivateInstance
+      
+        

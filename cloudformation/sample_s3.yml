@@ -1,0 +1,5 @@
+Resources:
+  sampleS3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: macauley-bucket

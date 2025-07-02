@@ -1,0 +1,113 @@
+Resources:
+  MyVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags: 
+        - Key: Name
+          Value: macauley-VPC
+        - Key: Project-Name
+          Value: Testproject-VPC
+  MyIGW: 
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags: 
+        - Key: Name
+          Value: macauley-igw
+        - Key: Project-Name
+          Value: Testproject-igw
+  MyIGWattachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref MyIGW
+      VpcId: !Ref MyVpc
+  Mypublicsubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags: 
+        - Key: Name
+          Value: macauley-PublicSubnet
+        - Key: Project-Name
+          Value: Testproject-PublicSubnet
+      VpcId: !Ref MyVpc
+  Myprivatesubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.2.0/24
+      Tags: 
+        - Key: Name
+          Value: macauley-PrivateSubnet
+        - Key: Project-Name
+          Value: Testproject-PrivateSubnet
+      VpcId: !Ref MyVpc
+  MypublicRT:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags: 
+        - Key: Name
+          Value: macauley-publicRT
+        - Key: Project-Name
+          Value: Testproject-publicRT
+      VpcId: !Ref MyVpc
+  privateRT:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        Tags: 
+          - Key: Name
+            Value: macauley-privateRT
+          - Key: Name
+            Value: Testproject-privateRT
+        VpcId: !Ref MyVpc
+  Mypublicroute: 
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref MyIGW
+      RouteTableId: !Ref MypublicRT
+  MypublicRTasociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref MypublicRT
+      SubnetId: !Ref Mypublicsubnet
+  MyPrivateRTasociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref privateRT
+      SubnetId: !Ref Myprivatesubnet 
+  MyPublicInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-006b4a3ad5f56fbd6
+      SecurityGroupIds: !Ref MySecurityGroup
+      InstanceType: t3.micro
+      SubnetId: !Ref Mypublicsubnet
+      Tags: 
+        - Key: Name
+          Value: macauleypublic-Instance
+  MyPrivateInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-006b4a3ad5f56fbd6
+      InstanceType: t3.micro
+      SubnetId: !Ref Myprivatesubnet
+      Tags: 
+        - Key: Name
+          Value: macauleyPrivate-Instance  
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH access
+      VpcId: !Ref MyVpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0  
+      Tags:
+        - Key: Name
+          Value: macauley-ssh-sg
+        - Key: Project-Name
+          Value: Testproject-ssh-sg
+
